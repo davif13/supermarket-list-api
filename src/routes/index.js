@@ -1,5 +1,5 @@
 const express = require("express");
-const ListItem = require("../models/ListItem");
+const listItem = require("../models/ListItem");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -8,7 +8,15 @@ router.get("/", (req, res) => {
 
 router.get("/list-item", async (req, res) => {
   try {
-    const items = await listItem.find();
+    const { username } = req.headers;
+
+    if (!username) {
+      res.status(401).json({ error: "Username is required" });
+    }
+
+    const items = await listItem.find({
+      username,
+    });
     return res.json(items);
   } catch (error) {
     return res.status(400).json({ error });
@@ -17,6 +25,11 @@ router.get("/list-item", async (req, res) => {
 
 router.post("/list-item", async (req, res) => {
   const { name, quantity, checked } = req.body;
+  const { username } = req.headers;
+
+  if (!username) {
+    res.status(401).json({ error: "Username is required" });
+  }
 
   if (!name || name.length < 3) {
     return res.status(400).json({
@@ -35,6 +48,7 @@ router.post("/list-item", async (req, res) => {
       name,
       quantity,
       checked: checked || false,
+      username,
     });
     return res.status(200).json(newItem);
   } catch (error) {

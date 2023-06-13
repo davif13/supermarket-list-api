@@ -48,3 +48,7 @@ npm install
 ```
 npm run start:dev
 ```
+
+## Important!
+
+It's necessary to send the username at the GET and POST requests (headers).
